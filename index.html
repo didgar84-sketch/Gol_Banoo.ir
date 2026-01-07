@@ -1,4 +1,4 @@
-﻿﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="utf-8"/>
@@ -24,6 +24,9 @@
   .nav{display:flex;align-items:center;justify-content:space-between;height:72px}
   .logo{font-family:"Playfair Display",serif;font-weight:800;letter-spacing:.5px;background:linear-gradient(90deg,#b30086,#e7c468);-webkit-background-clip:text;background-clip:text;color:transparent;font-size:26px}
   .cta{display:inline-flex;align-items:center;gap:.5rem;background:linear-gradient(90deg,var(--purple),var(--gold));color:#fff;padding:10px 16px;border-radius:14px;font-weight:700;box-shadow:0 8px 20px rgba(106,17,203,.18)}
+  /* ✅ حذف نمایشی دکمه سفارش واتساپی در هدر/فوتر (بدون حذف کد) */
+  .cta--wa{display:none !important}
+
   /* Hero */
   .hero{position:relative;overflow:hidden}
   .hero-wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:center;padding:40px 0}
@@ -33,8 +36,46 @@
   .badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
   .badge{border:1px solid #eee;border-radius:999px;padding:8px 12px;background:#fff}
   .hero-img{position:relative;border-radius:24px;overflow:hidden;box-shadow:0 24px 60px rgba(106,17,203,.18)}
-  .hero-img:after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,rgba(106,17,203,.18),rgba(212,175,55,.08));}
+  .hero-img:after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,rgba(106,17,203,.18),rgba(212,175,55,.08));pointer-events:none;}
   .hero-img img{display:block;width:100%;height:auto;vertical-align:middle}
+
+  /* ✅ Hero Slider */
+  .slider{position:relative;width:100%;aspect-ratio: 4/3;}
+  .slide{
+    position:absolute;inset:0;width:100%;height:100%;
+    object-fit:cover;display:block;
+    opacity:0;transform:scale(1.02);
+    transition:opacity .9s ease, transform 1.2s ease;
+    will-change:opacity, transform;
+  }
+  .slide.is-active{opacity:1;transform:scale(1)}
+  .slider-ui{
+    position:absolute;inset-inline:14px;bottom:12px;
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    pointer-events:none;
+  }
+  .dots{display:flex;gap:6px;pointer-events:auto}
+  .dot{
+    width:10px;height:10px;border-radius:999px;border:1px solid rgba(255,255,255,.7);
+    background:rgba(255,255,255,.25);
+    cursor:pointer;transition:transform .2s ease, background .2s ease;
+  }
+  .dot[aria-current="true"]{background:rgba(255,255,255,.9);transform:scale(1.15)}
+  .slider-btn{
+    pointer-events:auto;
+    border:1px solid rgba(255,255,255,.7);
+    background:rgba(255,255,255,.22);
+    color:#fff;border-radius:12px;
+    padding:8px 10px;font-weight:800;
+    backdrop-filter: blur(6px);
+    cursor:pointer;
+  }
+  .slider-btn:active{transform:translateY(1px)}
+  @media (prefers-reduced-motion: reduce){
+    .slide{transition:none}
+    .dot{transition:none}
+  }
+
   /* Products */
   section.products{padding:32px 0 12px}
   section.products h2{font-size:22px;margin:0 0 14px 0;font-weight:800}
@@ -73,7 +114,8 @@
 <header>
   <div class="container nav">
     <div class="logo">GOL BANOO</div>
-    <a class="cta" href="#order">سفارش واتساپی</a>
+    <!-- (حذف شد: دکمه سفارش واتساپی در بالا) - کد نگه داشته شده ولی مخفی است -->
+    <a class="cta cta--wa" href="#order">سفارش واتساپی</a>
   </div>
 </header>
 
@@ -91,8 +133,26 @@
         <a class="cta" href="#products">دیدن محصولات</a>
       </div>
     </div>
-    <div class="hero-img">
-      <img src="assets/hero.jpg" alt="Gol Banoo Hero" />
+
+    <!-- ✅ تصویر هیرو تبدیل به اسلایدر شد -->
+    <div class="hero-img" aria-label="اسلایدر تصاویر هیرو">
+      <div class="slider" id="heroSlider">
+        <!-- اسلایدها (فقط مسیر فایل‌ها را با عکس‌های خودتان جایگزین کنید) -->
+        <img class="slide is-active" src="assets/hero/1.jpg" alt="Gol Banoo Hero Slide 1" loading="eager" decoding="async">
+        <img class="slide" src="assets/hero/2.jpg" alt="Gol Banoo Hero Slide 2" loading="lazy" decoding="async">
+        <img class="slide" src="assets/hero/3.jpg" alt="Gol Banoo Hero Slide 3" loading="lazy" decoding="async">
+
+        <!-- (کد قبلی نگه داشته شده ولی استفاده نمی‌شود) -->
+        <img src="assets/hero.jpg" alt="Gol Banoo Hero" style="display:none" />
+
+        <div class="slider-ui" aria-hidden="false">
+          <div class="dots" id="heroDots" aria-label="نقاط اسلایدر"></div>
+          <div style="display:flex;gap:8px;pointer-events:auto">
+            <button class="slider-btn" type="button" id="heroPrev" aria-label="اسلاید قبلی">‹</button>
+            <button class="slider-btn" type="button" id="heroNext" aria-label="اسلاید بعدی">›</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </main>
@@ -105,168 +165,168 @@
       <!-- 1 -->
       <div class="card">
         <picture>
-          
+
           <img src="assets/products/1.jpg" alt="شیرینی مدرن کاراملا " loading="lazy" decoding="async">
         </picture>
         <div class="content">
           <div style="display:flex;justify-content:space-between;align-items:center">
             <h3>شیرینی مدرن کاراملا </h3><span class="tag">پرفروش</span>
           </div>
-          <div class="price">هر عدد 40٬000 تومان</div>
+          <div class="price"> </div>
           <a class="buy" href="#order">سفارش</a>
         </div>
       </div>
       <!-- 2 -->
       <div class="card">
         <picture>
-          
+
           <img src="assets/products/2.jpg" alt="شیرینی مدرن گردویی لوتوس" loading="lazy" decoding="async">
         </picture>
         <div class="content">
           <div style="display:flex;justify-content:space-between;align-items:center">
             <h3>شیرینی مدرن گردویی لوتوس</h3><span class="tag">سفارشی</span>
           </div>
-          <div class="price">هر عدد 60٬000 تومان</div>
+          <div class="price"> </div>
           <a class="buy" href="#order">سفارش</a>
         </div>
       </div>
       <!-- 3 -->
       <div class="card">
         <picture>
-          
+
           <img src="assets/products/3.jpg" alt="حلوای بوتیکی بادام" loading="lazy" decoding="async">
         </picture>
         <div class="content">
           <div style="display:flex;justify-content:space-between;align-items:center">
             <h3>حلوای بوتیکی بادام</h3><span class="tag">تازه‌پز</span>
           </div>
-          <div class="price">هر عدد 45٬000 تومان</div>
+          <div class="price"> </div>
           <a class="buy" href="#order">سفارش</a>
         </div>
       </div>
       <!-- 4 -->
       <div class="card">
         <picture>
-          
+
           <img src="assets/products/4.jpg" alt=" دسر مدرن باقلوا" loading="lazy" decoding="async">
         </picture>
         <div class="content">
           <div style="display:flex;justify-content:space-between;align-items:center">
             <h3>دسر مدرن باقلوا</h3><span class="tag">هدیه</span>
           </div>
-          <div class="price">هر اسلایس 160٬000 تومان</div>
+          <div class="price"> </div>
           <a class="buy" href="#order">سفارش</a>
         </div>
       </div>
       <!-- 5 -->
       <div class="card">
         <picture>
-          
+
           <img src="assets/products/5.jpg" alt="شیرینی اصیل اشرفی " loading="lazy" decoding="async">
         </picture>
         <div class="content">
           <div style="display:flex;justify-content:space-between;align-items:center">
             <h3>شیرینی اصیل اشرفی </h3><span class="tag">جدید</span>
           </div>
-          <div class="price">هر عدد 25٬000 تومان</div>
+          <div class="price"> </div>
           <a class="buy" href="#order">سفارش</a>
         </div>
       </div>
       <!-- 6 -->
       <div class="card">
         <picture>
-          
+
           <img src="assets/products/6.jpg" alt="ساوارین پینتا اوت" loading="lazy" decoding="async">
         </picture>
         <div class="content">
           <div style="display:flex;justify-content:space-between;align-items:center">
             <h3>ساوارین پینتا اوت</h3><span class="tag">ویژه</span>
           </div>
-          <div class="price">هر عدد 25٬000 تومان</div>
+          <div class="price"> </div>
           <a class="buy" href="#order">سفارش</a>
         </div>
       </div>
       <!-- 7 -->
       <div class="card">
         <picture>
-          
+
           <img src="assets/products/7.jpg" alt="شیرینی مدرن فرزیا" loading="lazy" decoding="async">
         </picture>
         <div class="content">
           <div style="display:flex;justify-content:space-between;align-items:center">
             <h3>شیرینی مدرن فرزیا</h3><span class="tag">پیشنهاد سرآشپز</span>
           </div>
-          <div class="price">هر عدد 50٬000 تومان</div>
+          <div class="price"> </div>
           <a class="buy" href="#order">سفارش</a>
         </div>
       </div>
       <!-- 8 -->
       <div class="card">
         <picture>
-          
+
           <img src="assets/products/8.jpg" alt="شیرینی سنتی اندرونی نارگیلی  " loading="lazy" decoding="async">
         </picture>
         <div class="content">
           <div style="display:flex;justify-content:space-between;align-items:center">
             <h3>شیرینی سنتی اندرونی نارگیلی </h3><span class="tag">لوکس</span>
           </div>
-          <div class="price">هر عدد 30٬000 تومان</div>
+          <div class="price"> </div>
           <a class="buy" href="#order">سفارش</a>
         </div>
       </div>
       <!-- 9 -->
       <div class="card">
         <picture>
-          
+
           <img src="assets/products/9.jpg" alt="شیرینی سنتی اندرونی پسته ای" loading="lazy" decoding="async">
         </picture>
         <div class="content">
           <div style="display:flex;justify-content:space-between;align-items:center">
             <h3>شیرینی سنتی اندرونی پسته ای</h3><span class="tag">پرفروش</span>
           </div>
-          <div class="price">هر عدد 40٬000 تومان</div>
+          <div class="price"> </div>
           <a class="buy" href="#order">سفارش</a>
         </div>
       </div>
       <!-- 10 -->
       <div class="card">
         <picture>
-          
+
           <img src="assets/products/10.jpg" alt="شیرینی سنتی اشرفی " loading="lazy" decoding="async">
         </picture>
         <div class="content">
           <div style="display:flex;justify-content:space-between;align-items:center">
             <h3>شیرینی سنتی اشرفی</h3><span class="tag">تازه‌پز</span>
           </div>
-          <div class="price">هر عدد 35٬000 تومان</div>
+          <div class="price"> </div>
           <a class="buy" href="#order">سفارش</a>
         </div>
       </div>
       <!-- 11 -->
       <div class="card">
         <picture>
-          
+
           <img src="assets/products/11.jpg" alt="شیرینی مدرن رینگ باقلوا " loading="lazy" decoding="async">
         </picture>
         <div class="content">
           <div style="display:flex;justify-content:space-between;align-items:center">
             <h3>شیرینی مدرن رینگ باقلوا</h3><span class="tag">مجلسی</span>
           </div>
-          <div class="price">هر عدد 45٬000 تومان</div>
+          <div class="price"> </div>
           <a class="buy" href="#order">سفارش</a>
         </div>
       </div>
       <!-- 12 -->
       <div class="card">
         <picture>
-          
+
           <img src="assets/products/12.jpg" alt="شیرینی مدرن گاناش کوکی " loading="lazy" decoding="async">
         </picture>
         <div class="content">
           <div style="display:flex;justify-content:space-between;align-items:center">
             <h3>شیرینی مدرن گاناش کوکی</h3><span class="tag">عطری</span>
           </div>
-          <div class="price">هر عدد 25٬000 تومان</div>
+          <div class="price"> </div>
           <a class="buy" href="#order">سفارش</a>
         </div>
       </div>
@@ -336,7 +396,8 @@
   <div class="container" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
     <div class="logo">GOL BANOO</div>
     <div>©  گُل بانو — تمام حقوق محفوظ است.</div>
-    <a class="cta" href="#order">سفارش واتساپی</a>
+    <!-- (حذف شد: دکمه سفارش واتساپی در پایین) - کد نگه داشته شده ولی مخفی است -->
+    <a class="cta cta--wa" href="#order">سفارش واتساپی</a>
   </div>
 </footer>
 
@@ -365,15 +426,78 @@
   document.getElementById('waBtn').addEventListener('click', function(e) {
     this.href = buildWA();
   });
+
+  /* ✅ Hero Slider Logic (vanilla JS, no dependencies) */
+  (function(){
+    const root = document.getElementById('heroSlider');
+    if(!root) return;
+    const slides = Array.from(root.querySelectorAll('.slide'));
+    const dotsWrap = document.getElementById('heroDots');
+    const prevBtn = document.getElementById('heroPrev');
+    const nextBtn = document.getElementById('heroNext');
+    if(slides.length <= 1) return;
+
+    let idx = Math.max(0, slides.findIndex(s => s.classList.contains('is-active')));
+    if(idx === -1) idx = 0;
+
+    const dots = slides.map((_, i) => {
+      const b = document.createElement('button');
+      b.type = "button";
+      b.className = "dot";
+      b.setAttribute("aria-label", "رفتن به اسلاید " + (i+1));
+      b.addEventListener('click', () => go(i, true));
+      dotsWrap.appendChild(b);
+      return b;
+    });
+
+    function paint(){
+      slides.forEach((s, i) => s.classList.toggle('is-active', i === idx));
+      dots.forEach((d, i) => d.setAttribute('aria-current', i === idx ? "true" : "false"));
+    }
+
+    function go(nextIndex, userAction){
+      idx = (nextIndex + slides.length) % slides.length;
+      paint();
+      if(userAction) restart();
+    }
+
+    function next(){ go(idx + 1, true); }
+    function prev(){ go(idx - 1, true); }
+
+    nextBtn && nextBtn.addEventListener('click', next);
+    prevBtn && prevBtn.addEventListener('click', prev);
+
+    // autoplay
+    const AUTOPLAY_MS = 4200;
+    let timer = null;
+
+    function start(){
+      stop();
+      timer = setInterval(() => go(idx + 1, false), AUTOPLAY_MS);
+    }
+    function stop(){
+      if(timer){ clearInterval(timer); timer = null; }
+    }
+    function restart(){ start(); }
+
+    // pause on hover/focus
+    root.addEventListener('mouseenter', stop);
+    root.addEventListener('mouseleave', start);
+    root.addEventListener('focusin', stop);
+    root.addEventListener('focusout', start);
+
+    // keyboard
+    root.setAttribute('tabindex', '0');
+    root.addEventListener('keydown', (e)=>{
+      if(e.key === "ArrowLeft"){ prev(); }
+      if(e.key === "ArrowRight"){ next(); }
+    });
+
+    paint();
+    start();
+  })();
 </script>
 
 </body>
 </html>
-
-
-
-
-
-
-
 
